@@ -1,0 +1,9 @@
+# Private terms for tools/check_public_text.py; never committed (ADR-0010)
+.public-text-denylist
+
+# Each maintainer's local agent settings and private context (ADR-0012)
+CLAUDE.local.md
+.claude/settings.local.json
+
+.DS_Store
+__pycache__/

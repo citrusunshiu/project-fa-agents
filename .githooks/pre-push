@@ -1,0 +1,19 @@
+#!/bin/sh
+# Blocks a push that carries a likely secret or a private identifier (ADR-0010).
+# Enable once per clone: git config core.hooksPath .githooks
+set -eu
+root=$(git rev-parse --show-toplevel)
+zero=0000000000000000000000000000000000000000
+
+command -v trufflehog >/dev/null || { echo "pre-push: trufflehog is not installed" >&2; exit 1; }
+command -v uv >/dev/null || { echo "pre-push: uv is not installed" >&2; exit 1; }
+
+trufflehog git "file://$root" --no-update --fail --results=verified,unknown,unverified >&2 \
+  || { echo "pre-push: trufflehog found a likely secret; nothing was pushed" >&2; exit 1; }
+
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue  # deleting a branch
+  if [ "$remote_sha" = "$zero" ]; then range=$local_sha; else range=$remote_sha..$local_sha; fi
+  uv run --quiet "$root/tools/check_public_text.py" --commits "$range" >&2 \
+    || { echo "pre-push: private text found; nothing was pushed" >&2; exit 1; }
+done
