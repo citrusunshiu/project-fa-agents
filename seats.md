@@ -17,4 +17,4 @@ Agent-Effort: xhigh
 ```
 
 
-The maintainer rules on every decision record. An agent merges its own pull request once the reviewer App has approved it, unless it touches a path the hub's [CODEOWNERS](https://github.com/citrusunshiu/project-fa/blob/main/.github/CODEOWNERS) assigns to the maintainer; the maintainer approves and merges those, and every change here. The rulesets enforce the approvals.
+The maintainer rules on every decision record. An agent merges its own pull request once the reviewer App has approved it, unless it touches a path the hub's [CODEOWNERS](https://github.com/citrusunshiu/project-fa/blob/main/.github/CODEOWNERS) assigns to the maintainer; the maintainer approves and merges those, and every change here. The rulesets enforce an approval from someone other than the last pusher, and the maintainer's on the maintainer's paths; who the other approver is, and who merges, is the rule rather than a ruleset.
