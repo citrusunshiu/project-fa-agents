@@ -19,3 +19,5 @@ Work from before the first push has no pull requests to link, so it's listed by 
 - This repository.
 - The five repositories on GitHub, with the agents' GitHub App, the tracker's labels and milestones, and the project board.
 - The public-text check loads the private terms in a worktree, fails when it loads none, and allows GitHub's committer address ([#6](https://github.com/citrusunshiu/project-fa/pull/6)).
+- The repositories public, with rulesets that require an approval before every merge ([#8](https://github.com/citrusunshiu/project-fa/pull/8)).
+- CODEOWNERS for the maintainer's paths, and the rule for who merges ([#9](https://github.com/citrusunshiu/project-fa/pull/9)).
