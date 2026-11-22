@@ -21,3 +21,5 @@ Work from before the first push has no pull requests to link, so it's listed by 
 - The public-text check loads the private terms in a worktree, fails when it loads none, and allows GitHub's committer address ([#6](https://github.com/citrusunshiu/project-fa/pull/6)).
 - The repositories public, with rulesets that require an approval before every merge ([#8](https://github.com/citrusunshiu/project-fa/pull/8)).
 - CODEOWNERS for the maintainer's paths, and the rule for who merges ([#9](https://github.com/citrusunshiu/project-fa/pull/9)).
+- The reviewer App, whose approval lets an agent merge outside the maintainer's paths ([#11](https://github.com/citrusunshiu/project-fa/pull/11)).
+- Posting to GitHub only through a wrapper that runs the public-text check first ([#11](https://github.com/citrusunshiu/project-fa/pull/11), [#12](https://github.com/citrusunshiu/project-fa/pull/12)).
