@@ -17,5 +17,5 @@ Work from before the first push has no pull requests to link, so it's listed by 
 - The issue tracker's labels, milestones and forms.
 - READMEs for the web, Android and iOS client repositories.
 - This repository.
-- The five repositories on GitHub, private until Phase 0 ends, with the agents' GitHub App, the tracker's labels and milestones, and the project board.
-- CODEOWNERS, the first change through the whole flow ([#3](https://github.com/citrusunshiu/project-fa/pull/3)).
+- The five repositories on GitHub, with the agents' GitHub App, the tracker's labels and milestones, and the project board.
+- The public-text check loads the private terms in a worktree, fails when it loads none, and allows GitHub's committer address ([#6](https://github.com/citrusunshiu/project-fa/pull/6)).

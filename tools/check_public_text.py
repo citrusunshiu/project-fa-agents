@@ -5,9 +5,11 @@
 """Fail if tracked files, commit messages in a range, or extra text files contain private identifiers (ADR-0010).
 
 Generic patterns live here. Exact private terms never do: they come from a git-ignored
-.public-text-denylist file and from the PUBLIC_TEXT_DENYLIST environment variable (one term per line).
+.public-text-denylist file in the main checkout, which linked worktrees share, and from the
+PUBLIC_TEXT_DENYLIST environment variable (one term per line). With no terms from either, the check
+fails: a check with nothing to look for would pass anything.
 
-Usage: check_public_text.py [--repo <path>] [--commits <range>] [--text <file> ...]
+Usage: check_public_text.py [--repo <path>] [--commits <range>] [--text <file> ...] [--allow-no-terms]
 """
 import argparse
 import os
@@ -24,14 +26,24 @@ PATTERNS = {
 }
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
 ALLOWED_EMAIL_SUFFIXES = ("@users.noreply.github.com", "@example.com", "@example.org")
-ALLOWED_EMAILS = {"noreply@anthropic.com", "noreply@openai.com"}
+# GitHub commits squash merges made on github.com as noreply@github.com.
+ALLOWED_EMAILS = {"noreply@anthropic.com", "noreply@openai.com", "noreply@github.com"}
+
+
+def main_checkout() -> pathlib.Path:
+    """The main checkout's root. In a linked worktree, that's where the git-ignored list is."""
+    common = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+                            cwd=ROOT, capture_output=True, text=True)
+    return pathlib.Path(common.stdout.strip()).parent if common.returncode == 0 else ROOT
 
 
 def private_terms() -> list[str]:
     terms = os.environ.get("PUBLIC_TEXT_DENYLIST", "").splitlines()
-    local = ROOT / ".public-text-denylist"
-    if local.is_file():
-        terms += local.read_text().splitlines()
+    for root in dict.fromkeys((ROOT, main_checkout())):
+        local = root / ".public-text-denylist"
+        if local.is_file():
+            terms += local.read_text().splitlines()
+            break
     return [t.strip().lower() for t in terms if t.strip() and not t.startswith("#")]
 
 
@@ -54,6 +66,7 @@ def main() -> int:
     ap.add_argument("--repo", type=pathlib.Path, default=ROOT, help="check this repository instead of the one holding this script; private terms still load from this one")
     ap.add_argument("--commits", help="also check the messages of commits in this range, e.g. origin/main..HEAD")
     ap.add_argument("--text", action="append", default=[], help="also check this file, e.g. a pull request's title and body")
+    ap.add_argument("--allow-no-terms", action="store_true", help="pass without private terms, in a clone that has no list")
     a = ap.parse_args()
     terms = private_terms()
     repo = pathlib.Path(git(a.repo, "rev-parse", "--show-toplevel").strip())
@@ -81,6 +94,10 @@ def main() -> int:
     for e in sorted(set(errors)):
         print(f"error: {e}")
     print(f"public text: {repo.name}: {len(terms)} private terms loaded; {len(set(errors))} errors")
+    if not terms and not a.allow_no_terms:
+        print("error: no private terms loaded. Set PUBLIC_TEXT_DENYLIST or add .public-text-denylist to the main checkout; "
+              "without the list, pass --allow-no-terms.")
+        return 1
     return 1 if errors else 0
 
 

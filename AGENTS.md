@@ -20,4 +20,4 @@ This is the agents' working memory for Project FA ([ADR-0012](https://github.com
 
 ## Keeping the checks in step
 
-`tools/check_public_text.py` and `tools/check_pull_request.py` are copies of the hub's. Change them in the hub first, then copy them here. `tools/check.sh` fails when they differ from a hub checkout beside this one.
+`tools/check_public_text.py` and `tools/check_pull_request.py` are copies of the hub's. Change them in the hub first, then copy them here. `tools/check.sh` fails when they differ from the hub's main checkout beside this repository's, or, outside CI, when it can't find one.
